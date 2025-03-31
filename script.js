@@ -24,8 +24,8 @@ async function getChefBirthday(id) {
         console.error(error);
         throw new Error(`Non recupero la ricetta con id ${id}`);
     }
-    if (!recipe) {
-        throw new Error(`Non recupero la ricetta con id ${id}`);
+    if (recipe.message) {
+        throw new Error(recipe.message);
     }
     let chef;
     try {
@@ -41,8 +41,8 @@ async function getChefBirthday(id) {
         console.error(error);
         throw new Error(`Non recupero lo chef con id ${id}`);
     }
-    if (!chef) {
-        throw new Error(`Non recupero lo chef con id ${id}`);
+    if (chef.message) {
+        throw new Error(chef.message);
     }
     const birthday = chef.birthDate;
 
