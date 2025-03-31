@@ -13,48 +13,52 @@ Gestire gli errori con try/catch
 */
 
 async function getChefBirthday(id) {
-    let recipeResponse;
+    let recipe;
     try {
         //recupero la ricetta
-        recipeResponse = await fetch(`https://dummyjson.com/recipes/${id}`);
-        if (!recipeResponse.ok) {
-            throw new Error('Errore nel recupero della ricetta');
-        }
+        const recipeResponse = await fetch(`https://dummyjson.com/recipes/${id}`);
+
         //estraggo la proprietà userId dalla ricetta
-        const recipe = await recipeResponse.json();
+        recipe = await recipeResponse.json();
+    } catch (error) {
+        console.error(error);
+        throw new Error(`Non recupero la ricetta con id ${id}`);
+    }
+    if (!recipe) {
+        throw new Error(`Non recupero la ricetta con id ${id}`);
+    }
+    let chef;
+    try {
         const userId = recipe.userId;
 
         //recupero le informazioni dello chef
         const chefResponse = await fetch(`https://dummyjson.com/users/${userId}`);
-        if (!chefResponse.ok) {
-            throw new Error('Errore nel recupero delle informazioni dello chef');
-        }
+
         //estraggo la data di nascita dello chef
-        const chef = await chefResponse.json();
-        const birthday = chef.birthDate;
-        if (!chef.birthDate) {
-            throw new Error('Data di nascita non disponibile');
-        }
+        chef = await chefResponse.json();
 
-        //restituisco la data di nascita dello chef
-        return { ...recipeResponse, birthday };
+    } catch (error) {
+        console.error(error);
+        throw new Error(`Non recupero lo chef con id ${id}`);
     }
+    if (!chef) {
+        throw new Error(`Non recupero lo chef con id ${id}`);
+    }
+    const birthday = chef.birthDate;
 
-    catch (error) {
-        throw new Error(`${error.message}`);
-
-    }
-    finally {
-        console.log('Richiesta completata'); // Messaggio finale
-    }
+    //restituisco la data di nascita dello chef
+    return birthday
 }
+
+
+
 (async () => {
     try {
         const birthday = await getChefBirthday(2);
-        console.log(birthday); // Stampa la data di nascita dello chef
+        console.log("Data di nascita dello chef:", birthday); // Stampa la data di nascita dello chef
     }
     catch (error) {
-        console.error('Errore:', error); // Gestione degli errori
+        console.error('Errore:', error.message); // Gestione degli errori
     }
     finally {
         console.log('Operazione completata'); // Messaggio finale
